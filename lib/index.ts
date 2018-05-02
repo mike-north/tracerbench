@@ -12,7 +12,7 @@ export {
 } from "./benchmarks/initial-render-metric";
 export {
   InitialRenderBenchmark,
-  IInitialRenderBenchmarkParams,
+  IInitialRenderBenchmarkParams
 } from "./benchmarks/initial-render";
 export {
   Benchmark,
@@ -27,3 +27,4 @@ export {
 } from "./runner";
 export { ITab } from "./tab";
 export * from "./util";
+export { InitialRenderSwBenchmark } from "./benchmarks/initial-render-sw";

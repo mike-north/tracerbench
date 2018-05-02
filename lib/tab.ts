@@ -1,10 +1,13 @@
 import { IDebuggingProtocolClient } from "chrome-debugging-client";
 import {
+  CacheStorage,
   Emulation,
   HeapProfiler,
   Network,
   Page,
-  Tracing,
+  Runtime,
+  ServiceWorker,
+  Tracing
 } from "chrome-debugging-client/dist/protocol/tot";
 import Trace from "./trace/trace";
 import Process from "./trace/process";
@@ -15,6 +18,14 @@ export interface ITab {
   /** The current frame for the tab */
   frame: Page.Frame;
   onNavigate: (() => void) | undefined;
+
+  ServiceWorker: ServiceWorker;
+  CacheStorage: CacheStorage;
+
+  runtimeEvaluate(fn: any): any;
+  clearCacheStorage(scopeURL: string): Promise<void>;
+  unregisterSW(scopeURL: string): Promise<void>;
+
   /** Add a script to execute on load */
   addScriptToEvaluateOnLoad(source: string): Promise<Page.ScriptIdentifier>;
   /** Remove a previously added script */
@@ -57,6 +68,9 @@ class Tab implements ITab {
    */
   public onNavigate: (() => void) | undefined = undefined;
 
+  public ServiceWorker: ServiceWorker;
+  public CacheStorage: CacheStorage;
+
   private id: string;
   private client: IDebuggingProtocolClient;
 
@@ -64,6 +78,8 @@ class Tab implements ITab {
   private tracing: Tracing;
   private emulation: Emulation;
   private network: Network;
+  private Runtime: Runtime;
+
   private heapProfiler: HeapProfiler;
 
   constructor(id: string, client: IDebuggingProtocolClient, page: Page, frame: Page.Frame) {
@@ -75,6 +91,9 @@ class Tab implements ITab {
     this.network = new Network(client);
     this.emulation = new Emulation(client);
     this.heapProfiler = new HeapProfiler(client);
+    this.ServiceWorker = new ServiceWorker(client);
+    this.CacheStorage = new CacheStorage(client);
+    this.Runtime = new Runtime(client);
     page.frameNavigated = (params) => {
       const newFrame = params.frame;
       if (!newFrame.parentId) {
@@ -167,6 +186,18 @@ class Tab implements ITab {
     return { end, traceComplete };
   }
 
+  public async runtimeEvaluate(fn: any) {
+    this.Runtime.enable();
+
+    const result = await this.Runtime.evaluate({
+      awaitPromise: true,
+      expression: `(${fn.toString()}())`
+    });
+
+    this.Runtime.disable();
+    return result;
+  }
+
   /** Clear browser cache and memory cache */
   public async clearBrowserCache(): Promise<void> {
     const { network } = this;
@@ -179,6 +210,19 @@ class Tab implements ITab {
     // causes MemoryCache entries to be evicted
     await network.setCacheDisabled({cacheDisabled: true});
     await network.disable();
+  }
+
+  public async unregisterSW(scopeURL: string): Promise<void> {
+    await this.ServiceWorker.enable();
+    await this.ServiceWorker.unregister({scopeURL});
+    await this.ServiceWorker.disable();
+  }
+
+  public async clearCacheStorage(scopeURL: string): Promise<void> {
+    const { caches } = await this.CacheStorage.requestCacheNames({securityOrigin: scopeURL});
+    for (const cache of caches) {
+      await this.CacheStorage.deleteCache(cache);
+    }
   }
 
   public async setCPUThrottlingRate(rate: number) {
