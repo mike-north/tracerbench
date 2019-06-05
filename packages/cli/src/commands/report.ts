@@ -1,6 +1,7 @@
 import { execSync } from 'child_process';
 import * as fs from 'fs-extra';
 import { join, resolve } from 'path';
+import findChrome from '@tracerbench/find-chrome';
 
 import { Command } from '@oclif/command';
 import {
@@ -11,7 +12,7 @@ import createConsumeableHTML, {
     TracerBenchTraceResult,
 } from '../helpers/create-consumeable-html';
 
-export default class CreateOutputArtifact extends Command {
+export default class Report extends Command {
     public static description = `Parses the output json from tracerbench and formats it into either a pdf or html`;
     public static flags = {
         inputFilePath: inputFilePath({ required: true }),
@@ -23,8 +24,9 @@ export default class CreateOutputArtifact extends Command {
      * to generate the HTML string for the output file.
      */
     public async run() {
-        const { flags } = this.parse(CreateOutputArtifact);
+        const { flags } = this.parse(Report);
         const { inputFilePath, outputFilePath } = flags;
+        const chromePath = findChrome();
         let chromeArgs;
         let absPathToHTML;
         let absOutputPath;
@@ -67,7 +69,7 @@ export default class CreateOutputArtifact extends Command {
 
         absOutputPath = resolve(join(outputFilePath + 'output.pdf'));
         chromeArgs = `--headless --disable-gpu --print-to-pdf=${absOutputPath} file://${absPathToHTML}`;
-        execSync(`open chrome ${chromeArgs}`);
-        this.log(`Written file out to ${outputFilePath}`);
+        execSync(`${chromePath} ${chromeArgs}`);
+        this.log(`Written files out at ${absPathToHTML} and ${absOutputPath}`);
     }
 }

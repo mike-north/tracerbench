@@ -1,7 +1,7 @@
 import { test } from '@oclif/test';
 import * as chai from 'chai';
 import * as path from 'path';
-import CreateOutputArtifact from '../../src/commands/create-output-artifact';
+import Report from '../../src/commands/report';
 import { tmpDir } from '../setup';
 
 
@@ -14,7 +14,7 @@ describe('create-output-artifact: creates html', () => {
     .it(
       `runs create-output-artifact --inputFilePath=${testCompareJSON}`,
       async ctx => {
-        await CreateOutputArtifact.run([
+        await Report.run([
           '--inputFilePath',
           testCompareJSON
         ]);
