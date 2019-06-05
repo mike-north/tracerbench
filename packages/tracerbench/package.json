@@ -46,6 +46,7 @@
     "chalk": "^2.4.2",
     "chrome-debugging-client": "^0.6.8",
     "d3": "^5.7.0",
+    "handlebars": "^4.1.2",
     "silent-error": "^1.1.1",
     "tslib": "^1.9.3"
   },

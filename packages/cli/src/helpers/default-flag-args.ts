@@ -71,5 +71,7 @@ export const defaultFlagArgs: ITBConfig = {
   runtimeStats: 'false',
   emulateDevice: null,
   routes: ['/'],
-  regressionThreshold: '0ms',
+  inputFilePath: './tracerbench-results/compare.json',
+  outputFilePath: './tracerbench-results/artifact/',
+  regressionThreshold: '0ms'
 };

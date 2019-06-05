@@ -26,6 +26,8 @@ export interface ITBConfig {
   runtimeStats?: 'true' | 'false';
   emulateDevice?: string | null;
   socksPorts?: [string, string];
+  inputFilePath?: string;
+  outputFilePath?: string;
   regressionThreshold?: number | string;
 }
 

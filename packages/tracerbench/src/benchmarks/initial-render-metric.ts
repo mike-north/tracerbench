@@ -8,6 +8,8 @@ import {
 } from "../trace/trace_event";
 import { runtimeCallStatGroup } from "../util";
 
+import * as fs from 'fs-extra';
+
 // going to count blink_gc time as js time since it is wrappers
 // that support js like dom nodes.
 const IS_V8_CAT = /(?:^|,)(?:disabled-by-default-)?v8(?:[,.]|$)/;
@@ -192,6 +194,7 @@ export default class InitialRenderMetric {
     const markers = this.markers;
     const phaseEvents: ITraceEvent[] = [];
     let eventIdx = 0;
+    fs.writeFileSync('events_output.json', JSON.stringify(events));
     for (const marker of markers) {
       let markEvent: ITraceEvent | undefined;
       for (; eventIdx < events.length; eventIdx++) {
