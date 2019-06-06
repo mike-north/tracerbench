@@ -22,7 +22,7 @@ $ npm install -g tracerbench-cli
 $ tracerbench COMMAND
 running command...
 $ tracerbench (-v|--version|version)
-tracerbench-cli/2.0.0-beta.17 darwin-x64 node-v10.15.2
+tracerbench-cli/2.0.0-beta.18 darwin-x64 node-v10.15.3
 $ tracerbench --help [COMMAND]
 USAGE
   $ tracerbench COMMAND
@@ -165,6 +165,7 @@ s?: TRACE_EVENT_SCOPE;
 * [`tracerbench create-archive`](#tracerbench-create-archive)
 * [`tracerbench help [COMMAND]`](#tracerbench-help-command)
 * [`tracerbench marker-timings`](#tracerbench-marker-timings)
+* [`tracerbench report`](#tracerbench-report)
 * [`tracerbench trace`](#tracerbench-trace)
 
 ## `tracerbench compare`
@@ -282,6 +283,22 @@ OPTIONS
 
   --url=url                          (required) [default: http://localhost:8000/] URL to visit for create-archive,
                                      timings & trace commands
+```
+
+## `tracerbench report`
+
+Parses the output json from tracerbench and formats it into pdf and html
+
+```
+USAGE
+  $ tracerbench report
+
+OPTIONS
+  --inputFilePath=inputFilePath  (required) [default: ./tracerbench-results/compare.json] The json output filepath for
+                                 tracerbench result
+
+  --tbResultsFile=tbResultsFile  (required) [default: ./tracerbench-results] The output filepath for all tracerbench
+                                 results
 ```
 
 ## `tracerbench trace`

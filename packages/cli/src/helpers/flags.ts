@@ -208,9 +208,4 @@ export const emulateDevice = flags.build({
 export const inputFilePath = flags.build({
   default: () => getConfigDefault('inputFilePath', defaultFlagArgs.inputFilePath),
   description: 'The json output filepath for tracerbench result',
-})
-
-export const outputFilePath = flags.build({
-  default: () => getConfigDefault('inputFilePath', defaultFlagArgs.outputFilePath),
-  description: 'The output filepath for the pdf or html',
-})
+});

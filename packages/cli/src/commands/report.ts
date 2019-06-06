@@ -1,23 +1,37 @@
-import { execSync } from 'child_process';
 import * as fs from 'fs-extra';
 import { join, resolve } from 'path';
-import findChrome from '@tracerbench/find-chrome';
+import { createSession } from 'chrome-debugging-client';
 
 import { Command } from '@oclif/command';
 import {
     inputFilePath,
-    outputFilePath,
+    tbResultsFolder,
 } from '../helpers/flags';
 import createConsumeableHTML, {
     TracerBenchTraceResult,
 } from '../helpers/create-consumeable-html';
 
+const ARTIFACT_FILE_NAME = 'artifact';
+
 export default class Report extends Command {
-    public static description = `Parses the output json from tracerbench and formats it into either a pdf or html`;
+    public static description = `Parses the output json from tracerbench and formats it into pdf and html`;
     public static flags = {
         inputFilePath: inputFilePath({ required: true }),
-        outputFilePath: outputFilePath({ required: true }),
+        tbResultsFolder: tbResultsFolder({ required: true })
     };
+
+    public static determineOutputFileName(outputFolder: string): string {
+        let count = 1;
+        while (true) {
+            const candidateHTML = join(outputFolder, `${ARTIFACT_FILE_NAME}-${count}.html`);
+            const candidatePDF = join(outputFolder, `${ARTIFACT_FILE_NAME}-${count}.pdf`);
+            if (!fs.existsSync(candidateHTML) && !fs.existsSync(candidatePDF)) {
+                break;
+            }
+            count += 1;
+        }
+        return `artifact-${count}`;
+    }
 
     /**
      * Ensure the input file is valid and call the helper function "createConsumeableHTML"
@@ -25,13 +39,12 @@ export default class Report extends Command {
      */
     public async run() {
         const { flags } = this.parse(Report);
-        const { inputFilePath, outputFilePath } = flags;
-        const chromePath = findChrome();
-        let chromeArgs;
+        const { inputFilePath, tbResultsFolder } = flags;
         let absPathToHTML;
         let absOutputPath;
         let renderedHTML;
         let htmlOutputPath;
+        let ouputFileName;
 
         let inputData: TracerBenchTraceResult[] = [];
 
@@ -56,20 +69,30 @@ export default class Report extends Command {
             this.error(`Missing control or experiment set in JSON`, { exit: 1 });
         }
 
+        ouputFileName = Report.determineOutputFileName(tbResultsFolder);
         // @ts-ignore
         renderedHTML = createConsumeableHTML(controlData, experimentData);
-        if (!fs.existsSync(outputFilePath)) {
-            fs.mkdirSync(outputFilePath, { recursive: true });
+        if (!fs.existsSync(tbResultsFolder)) {
+            fs.mkdirSync(tbResultsFolder, { recursive: true });
         }
 
-        htmlOutputPath = join(outputFilePath, 'output.html');
+        htmlOutputPath = join(tbResultsFolder, `${ouputFileName}.html`);
         absPathToHTML = resolve(htmlOutputPath);
 
         fs.writeFileSync(absPathToHTML, renderedHTML);
 
-        absOutputPath = resolve(join(outputFilePath + 'output.pdf'));
-        chromeArgs = `--headless --disable-gpu --print-to-pdf=${absOutputPath} file://${absPathToHTML}`;
-        execSync(`${chromePath} ${chromeArgs}`);
+        absOutputPath = resolve(join(tbResultsFolder + `${ouputFileName}.pdf`));
+        await createSession(async session => {
+            await session.spawnBrowser({
+                additionalArguments: [
+                    '--headless',
+                    '--disable-gpu',
+                    '----print-to-pdf=${absOutputPath}',
+                    'file://${absPathToHTML}',
+                ],
+                stdio: 'ignore'
+            });
+        });
         this.log(`Written files out at ${absPathToHTML} and ${absOutputPath}`);
     }
 }

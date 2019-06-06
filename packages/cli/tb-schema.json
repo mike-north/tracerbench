@@ -55,6 +55,9 @@
         "filter": {
             "type": "string"
         },
+        "inputFilePath": {
+            "type": "string"
+        },
         "iterations": {
             "type": [
                 "string",
@@ -133,6 +136,9 @@
                 "offline",
                 "slow-3g"
             ],
+            "type": "string"
+        },
+        "outputFilePath": {
             "type": "string"
         },
         "plotTitle": {

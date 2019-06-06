@@ -1,4 +1,4 @@
-const jStat = require('jStat').jStat;
+const jStat = require('jstat').jStat;
 
 /**
  * Difference of x and y

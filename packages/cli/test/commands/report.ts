@@ -4,22 +4,20 @@ import * as path from 'path';
 import Report from '../../src/commands/report';
 import { tmpDir } from '../setup';
 
+const tbResultsFolder = path.join(`${process.cwd()}/${tmpDir}/compare.json`);
 
 describe('create-output-artifact: creates html', () => {
-  const testCompareJSON = `${path.join(
-    process.cwd() + '/test/fixtures/tracerbench_output/compare.json',
-  )}`;
   test
     .stdout()
     .it(
-      `runs create-output-artifact --inputFilePath=${testCompareJSON}`,
+      `runs create-output-artifact --inputFilePath ${tbResultsFolder}`,
       async ctx => {
         await Report.run([
           '--inputFilePath',
-          testCompareJSON
+          tbResultsFolder
         ]);
 
-        chai.expect(ctx.stdout).to.contain(`Success asdasdfasdf`);
+        chai.expect(ctx.stdout).to.contain(`Written files out at `);
       },
     );
 });

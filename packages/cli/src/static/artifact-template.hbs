@@ -27,11 +27,11 @@
                         Difference is Not Significant
                     </div>
                 {{/if}}
-                <p><i>Wilcoxon rank-sum test</i> calculated p-value is <strong>{{analysisForPhase.pValue}}</strong> which means
+                <p><i>Wilcoxon rank-sum test</i> indicated that
                     {{#if analysisForPhase.is_significant}}
                         there is sufficient evidence that there is a difference between the control and experiment.
                     {{else}}
-                        there is not sufficient evidence that there is a difference between the control and experiment. <small>(we want a p-value less than 0.05 for significance).</small>
+                        there is not sufficient evidence that there is a difference between the control and experiment.
                     {{/if}}
                 </p>
                 <p>
