@@ -294,11 +294,11 @@ USAGE
   $ tracerbench report
 
 OPTIONS
-  --inputFilePath=inputFilePath  (required) [default: ./tracerbench-results/compare.json] The json output filepath for
-                                 tracerbench result
+  --inputFilePath=inputFilePath      (required) [default: ./tracerbench-results/compare.json] The json output filepath
+                                     for tracerbench result
 
-  --tbResultsFile=tbResultsFile  (required) [default: ./tracerbench-results] The output filepath for all tracerbench
-                                 results
+  --tbResultsFolder=tbResultsFolder  (required) [default: ./tracerbench-results] The output filepath for all tracerbench
+                                     results
 ```
 
 ## `tracerbench trace`

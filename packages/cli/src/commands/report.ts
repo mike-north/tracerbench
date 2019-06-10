@@ -44,7 +44,7 @@ export default class Report extends Command {
         let absOutputPath;
         let renderedHTML;
         let htmlOutputPath;
-        let ouputFileName;
+        let outputFileName;
 
         let inputData: TracerBenchTraceResult[] = [];
 
@@ -69,19 +69,19 @@ export default class Report extends Command {
             this.error(`Missing control or experiment set in JSON`, { exit: 1 });
         }
 
-        ouputFileName = Report.determineOutputFileName(tbResultsFolder);
+        outputFileName = Report.determineOutputFileName(tbResultsFolder);
         // @ts-ignore
         renderedHTML = createConsumeableHTML(controlData, experimentData);
         if (!fs.existsSync(tbResultsFolder)) {
             fs.mkdirSync(tbResultsFolder, { recursive: true });
         }
 
-        htmlOutputPath = join(tbResultsFolder, `${ouputFileName}.html`);
+        htmlOutputPath = join(tbResultsFolder, `/artifact/${outputFileName}.html`);
         absPathToHTML = resolve(htmlOutputPath);
 
         fs.writeFileSync(absPathToHTML, renderedHTML);
 
-        absOutputPath = resolve(join(tbResultsFolder + `${ouputFileName}.pdf`));
+        absOutputPath = resolve(join(tbResultsFolder + `/artifact/${outputFileName}.pdf`));
         await createSession(async session => {
             await session.spawnBrowser({
                 additionalArguments: [
